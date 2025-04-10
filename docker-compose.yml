@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  kafka:
+    image: bitnami/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT_INTERNAL
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@localhost:29093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+
+  jobmanager:
+    image: apache/flink:1.17.1-scala_2.12-java11
+    container_name: jobmanager
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      JOB_MANAGER_RPC_ADDRESS: jobmanager
+      FLINK_PROPERTIES: "jobmanager.rpc.address: jobmanager"
+    depends_on:
+      - kafka
+
+  taskmanager:
+    image: apache/flink:1.17.1-scala_2.12-java11
+    container_name: taskmanager
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    environment:
+      JOB_MANAGER_RPC_ADDRESS: jobmanager
+      FLINK_PROPERTIES: "jobmanager.rpc.address: jobmanager"
+      taskmanager.numberOfTaskSlots: 4
+
+  flink-job:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flink-job
+    depends_on:
+      - jobmanager
+      - kafka
+    command: python3 /opt/flink/jobs/process_ads.py
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8082:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
