@@ -9,7 +9,7 @@ table_env = StreamTableEnvironment.create(env, environment_settings=settings)
 
 KAFKA_BROKER = 'kafka:29092'
 
-# Tabla de ad_impressions
+# Table ad_impressions
 table_env.execute_sql(f"""
     CREATE TABLE ad_impressions (
         impression_id STRING,
@@ -31,7 +31,7 @@ table_env.execute_sql(f"""
     )
 """)
 
-# Tabla de ad_clicks
+# Table ad_clicks
 table_env.execute_sql(f"""
     CREATE TABLE ad_clicks (
         click_id STRING,
@@ -49,7 +49,7 @@ table_env.execute_sql(f"""
     )
 """)
 
-# Tabla de salida: analytics_results
+# Output Table: analytics_results
 table_env.execute_sql(f"""
     CREATE TABLE analytics_results (
         window_start TIMESTAMP_LTZ(3),
@@ -66,7 +66,7 @@ table_env.execute_sql(f"""
     )
 """)
 
-# Job: join + ventana de 1 minuto + cálculo de CTR
+# Result table
 table_env.execute_sql("""
     INSERT INTO analytics_results
     SELECT
@@ -82,3 +82,7 @@ table_env.execute_sql("""
     AND c.event_time BETWEEN i.event_time AND i.event_time + INTERVAL '1' MINUTE
     GROUP BY TUMBLE(i.event_time, INTERVAL '1' MINUTE), i.campaign_id
 """)
+
+
+
+table_env.execute("CTR Analytics Job")

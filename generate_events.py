@@ -46,7 +46,7 @@ while True:
     producer.produce(IMPRESSION_TOPIC, key=imp["impression_id"], value=json.dumps(imp))
     print(f"Sent impression: {imp['impression_id']}")
 
-    # Envia un click con 50% de probabilidad
+    
     if random.random() < 0.5:
         click = create_click(imp["impression_id"], imp["user_id"])
         producer.produce(CLICK_TOPIC, key=click["click_id"], value=json.dumps(click))
@@ -54,3 +54,4 @@ while True:
 
     producer.flush()
     time.sleep(1)
+

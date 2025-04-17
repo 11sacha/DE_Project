@@ -2,7 +2,7 @@ FROM apache/flink:1.17.1-scala_2.12-java11
 
 USER root
 
-# Instalar librerías necesarias
+# Intall necesary libraries
 RUN apt-get update && \
     apt-get install -y python3 python3-pip curl && \
     rm -rf /var/lib/apt/lists/* && \
@@ -15,7 +15,7 @@ WORKDIR /opt/flink/jobs
 
 COPY process_ads.py .
 
-# Descargar el conector de Kafka para Flink
+# Downloads Kafka conector for Flink
 RUN curl -fSL -o /opt/flink/lib/flink-connector-kafka-1.17.1.jar \
     https://repo1.maven.org/maven2/org/apache/flink/flink-connector-kafka/1.17.1/flink-connector-kafka-1.17.1.jar && \
     curl -fSL -o /opt/flink/lib/kafka-clients-3.3.1.jar \

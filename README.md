@@ -16,22 +16,22 @@ It simulates streaming events (ad impressions and clicks), processes them with F
 
 ---
 
-### 1. Construir la imagen de Docker
+### 1. Build Docker image
 ```
 docker compose build
 ```
 
-### 2. Iniciar el container
+### 2. Initialize container
 ```
 docker compose up
 ```
 
-### 3. Detener el container
+### 3. Stop container
 ```
 docker compose down
 ```
 
-### 4. Generador de datos
+### 4. Generate data
 ```
 python3 generate_events.py
 ```
