@@ -1,4 +1,4 @@
-# SOLVO Challenge
+# Data Engineering Challenge
 
 This project implements a real-time data processing pipeline using **Apache Flink**, **Apache Kafka**, and **Python (PyFlink)** to calculate Click-Through Rate (CTR) metrics for ad campaigns.
 
